@@ -1,3 +1,14 @@
+/-----------------------------------
+/ Controle da central de telefones
+/ Desenvolvido por:
+/
+/ Emilio E. Inaba
+/ contato@emilioeiji.com.br
+/
+/ PH
+/ contato@phpazini.com
+/-----------------------------------
+
 #include <EtherCard.h>
 #include "DHT.h"
 
