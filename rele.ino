@@ -8,6 +8,8 @@ DHT dht(DHTPIN, DHTTYPE);
 
 int maxtemp = -100,mintemp = 100;
 int maxhum = -100, minhum = 100;
+int hum = 35;
+int temp = 25;
 
 static byte mymac[] = { 0x54,0x55,0x58,0x10,0x00,0x24  };
 static byte myip[] = { 172,16,56,3 };
@@ -20,7 +22,7 @@ BufferFiller bfill;
 
 #define RELAIS_1     7
 #define RELAIS_2     8
-bool relais1Status = false;
+bool relais1Status = true;
 bool relais2Status = false;
 
 const char http_OK[] PROGMEM =
@@ -39,18 +41,32 @@ const char http_Unauthorized[] PROGMEM =
 
 void homePage()
 {
+  int hum = dht.readHumidity(); //Le o valor da umidade
+  int temp = dht.readTemperature(); //Le o valor da temperatura
   bfill.emit_p(PSTR("$F"
     "<title>Arduino</title>" 
     "Rel 1: <a href=\"?relais1=$F\">$F</a><br />"
     "LED 1: <a href=\"?relais2=$F\">$F</a><br />"
     "<br />"
-    "Temperatura: "
     ),
   http_OK,
   relais1Status?PSTR("off"):PSTR("on"),
   relais1Status?PSTR("<font color=\"green\"><b>ON</b></font>"):PSTR("<font color=\"red\">OFF</font>"),
   relais2Status?PSTR("off"):PSTR("on"),
   relais2Status?PSTR("<font color=\"green\"><b>ON</b></font>"):PSTR("<font color=\"red\">OFF</font>"));
+  bfill.emit_p(PSTR("Temperatura: $D <br/><br/>"
+    "Temp Maxima: $D <br/>"
+    "Temp Minima: $D <br/><br/>"
+    "Humidade: $D <br/><br/>"
+    "Hum Maxima: $D <br/>"
+    "Hum Minima: $D <br/><br/>"),
+    temp,
+    maxtemp,
+    mintemp,
+    hum,
+    maxhum,
+    minhum
+  );
 }
 
 void setup()
@@ -82,13 +98,13 @@ void setup()
 
 void loop()
 {
-  float h = dht.readHumidity(); //Le o valor da umidade
-  float t = dht.readTemperature(); //Le o valor da temperatura
+  int hum = dht.readHumidity(); //Le o valor da umidade
+  int temp = dht.readTemperature(); //Le o valor da temperatura
   
-  if(t > maxtemp) {maxtemp = t;}
-  if(t < mintemp) {mintemp = t;}
-  if(h > maxhum) {maxhum = h;}
-  if(h < minhum) {minhum = h;}
+  if(temp > maxtemp) {maxtemp = temp;}
+  if(temp < mintemp) {mintemp = temp;}
+  if(hum > maxhum) {maxhum = hum;}
+  if(hum < minhum) {minhum = hum;}
   
   digitalWrite(RELAIS_1, relais1Status); 
   digitalWrite(RELAIS_2, relais2Status); 
